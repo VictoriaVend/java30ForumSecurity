@@ -58,7 +58,7 @@ public class ForumController {
 		return forumService.addLike(id);
 	}
 	/*@PreAuthorize("#author==authentication.name")*/
-	@PutMapping(ForumURL.POST + "/{id}" + ForumURL.COMMENT + "/{author}")
+	@PostMapping(ForumURL.POST + "/{id}" + ForumURL.COMMENT + "/{author}")
 	public PostRepostDto addComment(@RequestBody MessageDto message, @PathVariable String id,
 			@PathVariable String author) {
 		return forumService.addComment(message, id, author);

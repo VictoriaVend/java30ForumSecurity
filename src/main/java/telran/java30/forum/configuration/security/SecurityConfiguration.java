@@ -35,9 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication) or hasRole('MODERATOR')")
 				.antMatchers(HttpMethod.PUT, "/forum/post/{id}")
 				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication)")
-				.antMatchers(HttpMethod.POST,"/forum/post/{author}")
-				.access("#author==authentication.name")
-				.antMatchers(HttpMethod.POST, "/forum/post/{id}/comment/{author}")
+				.antMatchers(HttpMethod.POST,"/forum/post/{author}","/forum/post/{id}/comment/{author}")
 				.access("#author==authentication.name");
 		/* все запросы *//* permitAll()разрешено для всех *//* .authenticated()для зарегестрированных */
 
