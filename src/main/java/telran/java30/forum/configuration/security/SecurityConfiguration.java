@@ -30,13 +30,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.PUT, "/forum/post/{id}/like").access("@customSecurity.checkExpDate(authentication)")
 				.antMatchers("/account/user/*/").authenticated()
 				.antMatchers(HttpMethod.POST, "/account/login").access("@customSecurity.checkExpDate(authentication)")
-				.antMatchers("/account/admin/edit/{id}/{role}").hasRole("ADMINISTRATOR")
+				.antMatchers("/account/admin/edit/{id}/{role}").access("hasRole('ADMINISTRATOR') and @customSecurity.checkExpDate(authentication)")
 				.antMatchers(HttpMethod.DELETE, "/forum/post/{id}")
-				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication) or hasRole('MODERATOR')")
+				.access("(@customSecurity.checkAuthorityForDeletePost(#id,authentication) or hasRole('MODERATOR')) and @customSecurity.checkExpDate(authentication)")
 				.antMatchers(HttpMethod.PUT, "/forum/post/{id}")
-				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication)")
+				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication) and @customSecurity.checkExpDate(authentication)")
 				.antMatchers(HttpMethod.POST,"/forum/post/{author}","/forum/post/{id}/comment/{author}")
-				.access("#author==authentication.name");
+				.access("#author==authentication.name and @customSecurity.checkExpDate(authentication)");
 		/* все запросы *//* permitAll()разрешено для всех *//* .authenticated()для зарегестрированных */
 
 	}
