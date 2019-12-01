@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import telran.java30.account.dao.UserAccountRepository;
 @Service
-@Order(20)
+@Order(25)
 public class ExpDateFilter implements Filter {
 	
 	@Autowired
@@ -32,15 +32,15 @@ public class ExpDateFilter implements Filter {
 		Principal principal =request.getUserPrincipal();
 	if(principal!=null&&!chekPointCut(path)) {
 		if(userAccountRepository.findById(principal.getName())
-		.get().getExpDate().isAfter(LocalDateTime.now())) {
+		.get().getExpDate().isBefore(LocalDateTime.now())) {
 			response.sendError(403, "Password expired, change password!");
-			return;
+		return;
 		}
 	}chain.doFilter(request, response);
 	}
 	
 	private boolean chekPointCut(String path) {
-		boolean check = "/account/user/edit/password".equalsIgnoreCase(path);
+		boolean check = "/account/user/password".equalsIgnoreCase(path);
 		return check = check || path.startsWith("/forum/posts");
 	}
 	
