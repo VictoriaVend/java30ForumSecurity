@@ -1,6 +1,5 @@
 package telran.java30.forum.service.security;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 				.map(r->new SimpleGrantedAuthority("ROLE_"+r.toUpperCase()))
 				.collect(Collectors.toList());
 		
-		return new User(username, password, true,true,userAccount.getExpDate().isAfter(LocalDateTime.now()), true, listRole);
+		return new User(username, password, true,true,true, true, listRole);
 	}
 
 }

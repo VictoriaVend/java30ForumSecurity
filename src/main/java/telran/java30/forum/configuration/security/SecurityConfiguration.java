@@ -1,5 +1,6 @@
 package telran.java30.forum.configuration.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -9,10 +10,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import telran.java30.forum.service.security.filter.ExpDateFilter;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true) /* доёт возможнать ставить секурити над каждым отдельным методом */
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+	@Autowired
+	ExpDateFilter filter;
+
 	@Override
 	public void configure(WebSecurity web)
 			throws Exception {/* этот метог идет перед configure(HttpSecurity http) и вожнее */
@@ -27,11 +33,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.csrf()/* кроссайтовая подделка запроса, закрывает все запросы кроме GET */.disable()/* отключение */;
 		http.authorizeRequests()
 				.antMatchers("/forum/posts/**").permitAll()
+				.antMatchers(HttpMethod.PUT,"/account/user/password")
+				.authenticated();
+		http.addFilter(filter).authorizeRequests()
 				.antMatchers(HttpMethod.DELETE, "/account/user").authenticated()
 				.antMatchers(HttpMethod.GET, "/forum/post/{id}/**").authenticated()
 				.antMatchers(HttpMethod.PUT, "/forum/post/{id}/like", "/account/user").authenticated()
 				.antMatchers(HttpMethod.POST, "/account/login").authenticated()
-				/*.antMatchers("/account/user/password").*/ //TODO пока не знаю что делать
 				.antMatchers("/account/user/{login}/role/{role}").hasRole("ADMINISTRATOR")
 				.antMatchers(HttpMethod.DELETE, "/forum/post/{id}")
 				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication) or hasRole('MODERATOR')")
@@ -39,7 +47,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication)")
 				.antMatchers(HttpMethod.POST, "/forum/post/{author}", "/forum/post/{id}/comment/{author}")
 				.access("#author==authentication.name");
+				
+		
 		/* все запросы *//* permitAll()разрешено для всех *//* .authenticated()для зарегестрированных */
 
 	}
+
 }
