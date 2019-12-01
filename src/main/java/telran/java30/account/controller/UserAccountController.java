@@ -34,7 +34,7 @@ public class UserAccountController {
 		return userService.login(authentication.getName());
 	}
 
-	@PutMapping("/user/edit")
+	@PutMapping("/user")
 	public UserProfileDto editUser( @RequestBody UserEditDto userEditDto, Authentication authentication) {
 		return userService.editUser(authentication.getName(), userEditDto);
 	}
@@ -49,12 +49,12 @@ public class UserAccountController {
 		userService.changePassword(authentication.getName(), password);
 	}
 
-	@PutMapping("/admin/edit/{login}/{role}")
+	@PostMapping("/user/{login}/role/{role}")
 	public Set<String> addRole(@PathVariable String login, @PathVariable String role) {
 		return userService.addRole(login, role);
 	}
 
-	@DeleteMapping("/admin/edit/{login}/{role}")
+	@DeleteMapping("/user/{login}/role/{role}")
 	public Set<String> removeRole(@PathVariable String login, @PathVariable String role) {
 		return userService.removeRole(login, role);
 	}

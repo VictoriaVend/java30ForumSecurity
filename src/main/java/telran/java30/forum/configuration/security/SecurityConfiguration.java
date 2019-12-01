@@ -25,18 +25,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.httpBasic();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.csrf()/* кроссайтовая подделка запроса, закрывает все запросы кроме GET */.disable()/* отключение */;
-		http.authorizeRequests().antMatchers("/forum/posts/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/forum/post/{id}/**").access("@customSecurity.checkExpDate(authentication)")
-				.antMatchers(HttpMethod.PUT, "/forum/post/{id}/like").access("@customSecurity.checkExpDate(authentication)")
-				.antMatchers("/account/user/*/").authenticated()
-				.antMatchers(HttpMethod.POST, "/account/login").access("@customSecurity.checkExpDate(authentication)")
-				.antMatchers("/account/admin/edit/{id}/{role}").access("hasRole('ADMINISTRATOR') and @customSecurity.checkExpDate(authentication)")
+		http.authorizeRequests()
+				.antMatchers("/forum/posts/**").permitAll()
+				.antMatchers(HttpMethod.DELETE, "/account/user").authenticated()
+				.antMatchers(HttpMethod.GET, "/forum/post/{id}/**").authenticated()
+				.antMatchers(HttpMethod.PUT, "/forum/post/{id}/like", "/account/user").authenticated()
+				.antMatchers(HttpMethod.POST, "/account/login").authenticated()
+				/*.antMatchers("/account/user/password").*/ //TODO пока не знаю что делать
+				.antMatchers("/account/user/{login}/role/{role}").hasRole("ADMINISTRATOR")
 				.antMatchers(HttpMethod.DELETE, "/forum/post/{id}")
-				.access("(@customSecurity.checkAuthorityForDeletePost(#id,authentication) or hasRole('MODERATOR')) and @customSecurity.checkExpDate(authentication)")
+				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication) or hasRole('MODERATOR')")
 				.antMatchers(HttpMethod.PUT, "/forum/post/{id}")
-				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication) and @customSecurity.checkExpDate(authentication)")
-				.antMatchers(HttpMethod.POST,"/forum/post/{author}","/forum/post/{id}/comment/{author}")
-				.access("#author==authentication.name and @customSecurity.checkExpDate(authentication)");
+				.access("@customSecurity.checkAuthorityForDeletePost(#id,authentication)")
+				.antMatchers(HttpMethod.POST, "/forum/post/{author}", "/forum/post/{id}/comment/{author}")
+				.access("#author==authentication.name");
 		/* все запросы *//* permitAll()разрешено для всех *//* .authenticated()для зарегестрированных */
 
 	}
